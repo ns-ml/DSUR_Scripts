@@ -15,3 +15,28 @@ Next, calculate the model's chi squared statistic (which is analogous to the F s
 Next, convert the coefficients to more useful odds ratios. The quick way to do it is to execute `exp(model$coefficients)` along with the confidence intervals `exp(confinf(model))`
 
 Next, calculate the pseudo R squared to look at the effect size. There are many different equasions that can calculate the number and all have different results. Use script **pseudoR2 for log regression.Rmd**
+
+##Testing assumptions
+Test for multicolinearity `vif()` and tolerance `1/vif()`
+- Largest VIF should be less than 10
+- Mean VIF should not be much greater than 1
+- Tolerance below 0.1 is a big problem
+- Tolerance below 0.2 is a potential problem
+
+Test for linearity: Applies to any continuous independent variable. Create a interaction term between the variable and log(variable), add it to the dataframe and re-run the model with the new term. Any significant interaction term means that the assumption of linearity has been violated.
+`data$variableInt<- log(data$variable)*data$variable`
+
+##Multinomial Logistic Regression
+First, convert the dataframe into long format
+`newdataframe<- mlogit.data(olddataframe, choice = "outcome", format = "wide")`
+
+Next, generate the model using mlogit
+`model<- mlogit(outcome ~ 1 | independent_variables, data, reflevel = interger for the baseline factor level)`
+
+Besides summary, look at the coefficients in a dataframe
+`data.frame(exp(model$coefficients))` and look at the confidence intervals `exp(confint(model))`
+
+###Testing assumptions in multinomial logistic regression
+Linearity of the logit is assessed by creating new interaction variables for any that are contineous : log of the same variable and looking for significance. Identical to above.
+
+Multicolinearity can be investigated by creating a regular binomial glm and looking at vif and tolerance. For some reason, doing that on the mlogit model doesn't work, and the binomial glm is otherwise useless...
