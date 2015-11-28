@@ -8,4 +8,10 @@ output: html_document
 Starting with adjusting the levels of the factors such that the baseline factor comes first.
 `data$factor<- relevel(data$factor, "baseline")`
 
-Next, calculate the model's chi squared statistic (which is analogous to the F statistic calculated with linear regression). This statistic looks to see if the difference between the null model (which is based on frequency alone) and the new model is significant. This is accomplished by subtracting the residual deviance (-2 log likleyhood or -2LL) from the null deviance. Use the script logistic regression chi squared
+Generate a linear model using `model<- glm(outcome ~ IV, family = binomial(), data)`
+
+Next, calculate the model's chi squared statistic (which is analogous to the F statistic calculated with linear regression). This statistic looks to see if the difference between the null model (which is based on frequency alone) and the new model is significant. This is accomplished by subtracting the residual deviance (-2 log likleyhood or -2LL) from the null deviance. Use the script **logistic regression chi squared.Rmd**
+
+Next, convert the coefficients to more useful odds ratios. The quick way to do it is to execute `exp(model$coefficients)` along with the confidence intervals `exp(confinf(model))`
+
+Next, calculate the pseudo R squared to look at the effect size. There are many different equasions that can calculate the number and all have different results. Use script **pseudoR2 for log regression.Rmd**
