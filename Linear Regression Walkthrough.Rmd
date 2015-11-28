@@ -33,11 +33,12 @@ vif(), mean(vif()), 1/(vif)
 
 ###Homgeniety of variance and linearity
 plot(model) generates standardized residuals vs. fitted values and q-q plots
+hist(rstandard(model)) #To assess the assumption of normality of errors
 
 ##Boot strapping and robust regression
 use the function in bootstrap regression.R
 bootResults<- boot(statistic = bootReg, formula= sales ~ adverts + airplay + attract, data = album2, R = 2000)
-boot.ci(bootResults, type="bca", index=1)
+boot.ci(bootResults, type=lm"bca", index=1)
 Index 1-4 are analgous to the CI from confint(model). Similar numbers indicate the no violations have occuredsum
 
 ##Using catagorical variables
@@ -45,4 +46,4 @@ set contrasts:
 create a vector for each of the dummy variables, skipping the base group
 e.g. metal_v_NMA<- c(0,0,1,0)
 then manually set contrasts
-contrast(data$column)<- cbind(meta_v_NMA, ...)
+contrasts(data$column)<- cbind(meta_v_NMA, ...)
