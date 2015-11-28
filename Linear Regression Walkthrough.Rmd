@@ -1,0 +1,48 @@
+---
+title: "Linear Regression"
+output: html_document
+---
+
+Libraries needed
+
+```{r eval=FALSE}
+library(boot); library(car); library(QuantPsyc)
+```
+
+Use  anova() to compare models
+
+Use lm.beta() to see the coeffiecients as standardized beta estimates, which means that they are expressed as the number of standard deviations by which the outcome will change for a unit change in predictor. This eliminates the issues of different variable units, and should correlate well with the magnitude of the t-stat.
+
+Use confint() to generate 95% conf intervals
+
+## Outliers and influencial cases
+Outliers are investigated with residuals, influencial cases with the remainder of the test stats. Use script "regression diagnostics.R"
+
+## Assessing assumptions
+### Independence
+Use the Durbin Watson test to check that two residual errors next to each other are not correlated (autocorrelation). Ideal value is 2, anything smaller than 1 or greater than 3 should be investigated. dwt()
+
+###Multicolinearity
+VIF and tolerate (1/VIF) as well as mean VIF. Guidelines:
+-Largest VIF should be less than 10
+-Mean VIF should not be much greater than 1
+-Tolerance below 0.1 is a big problem
+-Tolerance below 0.2 is a potential problem
+
+vif(), mean(vif()), 1/(vif)
+
+###Homgeniety of variance and linearity
+plot(model) generates standardized residuals vs. fitted values and q-q plots
+
+##Boot strapping and robust regression
+use the function in bootstrap regression.R
+bootResults<- boot(statistic = bootReg, formula= sales ~ adverts + airplay + attract, data = album2, R = 2000)
+boot.ci(bootResults, type="bca", index=1)
+Index 1-4 are analgous to the CI from confint(model). Similar numbers indicate the no violations have occuredsum
+
+##Using catagorical variables
+set contrasts:
+create a vector for each of the dummy variables, skipping the base group
+e.g. metal_v_NMA<- c(0,0,1,0)
+then manually set contrasts
+contrast(data$column)<- cbind(meta_v_NMA, ...)
