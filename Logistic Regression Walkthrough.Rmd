@@ -4,6 +4,7 @@ author: "OA"
 date: "November 28, 2015"
 output: html_document
 ---
+`library(car); library(mlogit)`
 
 Starting with adjusting the levels of the factors such that the baseline factor comes first.
 `data$factor<- relevel(data$factor, "baseline")`
