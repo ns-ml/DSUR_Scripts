@@ -1,0 +1,40 @@
+---
+title: "Comparing Two Means"
+author: "OA"
+date: "November 28, 2015"
+output: html_document
+---
+
+`library(ggplot2); library(pastecs); library(WRS)`
+
+Start with plotting a bar graph with error bars
+`bar<- ggplot(data, aes(x, y))`
+`bar + stat_summary(fun.y = mean, geom = "bar", fill = "White", colour = "Black") + stat_summary(fun.data = mean_cl_normal, geom = "pointrange") + labs(x = "Type of Stimulus", y = "Anxiety")`
+
+Note: For repeated measure designs, you have to run through a few steps:
+- Create a new column with the mean of each indiviual
+- Create a new variable with grand mean
+- Create new columns with an adjustment value = grand mean - individual mean
+- Create a new column with id's (use gl)
+- use rshape2 melt to go from wide format to long format in preperation for plotting
+- use dplyr to remove the extra columns
+- plot as normal
+
+The difference between two groups can be expressed as a linear model, where b0 = mean of the baseline group and b1 is the difference between the two groups. Therefor, the t statistic represents the difference between the two groups.
+
+Start by creating a box plot with error bars. Sample:
+`box + geom_boxplot(stat="boxplot") + scale_y_continuous(limits = c(0,100), breaks = seq(from = 0, to = 100, by = 10))`
+
+Then descriptive statistics:
+`by(variable, group, stat.desc, basic = F, norm = T)`
+
+Next, create a t test model:
+`ind.t.test<- t.test(outcome ~ group, data)`
+`ind.t.test<- t.test(group1, group2)`
+
+In the event of a non-normal sampling distribution (i.e if sample size <50 and the sample itself has a non-normal distribution) can either try a non-parametric test OR a robust test (trimmed means with or without bootstrapping). yuen(), yuenbt(), pb2gen()
+
+Finally, estimate effect size using the script **t test effect size.R** Effect size can be reported even if p is >0.05
+
+Dependent t test is done the same way but with addition of paired = TRUE argument. Robust methods include yuend(), ydbt(), bootdpci(). Size effect caclulation using the same script.
+
