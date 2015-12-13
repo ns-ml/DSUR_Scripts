@@ -1,0 +1,31 @@
+---
+title: "Survival Analysis"
+author: "OA"
+date: "December 1, 2015"
+output: html_document
+---
+`library(survival)`
+First create a survival object using `Surv()`
+e.g.
+`surv.obj<- Surv(addict$survt, addict$status == 1)`
+
+Next, create a fit object using `survfit()` with surv.obj ~ 1 for no strata, or surv.obj ~ dat$strata 
+
+plot e.g.
+```{r eval=FALSE}
+plot(surv.fit, lty = c("solid", "dashed"), col = c("black", "blue"), xlab = "survival time in days", ylab = "survival probabilities")
+> legend("topright", c("Clinic 1", "Clinic 2"), lty = c("solid", "dashed"), col = c("black", "blue"))
+```
+
+Log-rank test e.g. this test looks at the observed versus expected events if the two curves were identical and compares them under a chi sq distribution
+`survdiff(Surv(survt, status)~clinic, data = addict)`
+OR
+`survdiff(surv.obj ~ stratum)`
+
+## Running a Cox PH model
+
+`ph.model<-coxph(surv.obj ~ predictor1 + predictor2, data = data)`
+then get a summary of the model object
+`summary(ph.model)`
+
+Next, check for interaction by creating a new model that contains interaction terms. The two models' log likelihood can be compared to see if there is significance to the full model. Use the script **liklihood ratio for two coxPH models.R**
