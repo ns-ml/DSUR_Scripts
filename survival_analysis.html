@@ -60,9 +60,53 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <p><code>library(survival)</code> First create a survival object using <code>Surv()</code> e.g. <code>surv.obj&lt;- Surv(addict$survt, addict$status == 1)</code></p>
 <p>Next, create a fit object using <code>survfit()</code> with surv.obj ~ 1 for no strata, or surv.obj ~ dat$strata</p>
-<p>plot e.g.</p>
-<pre class="r"><code>plot(surv.fit.by.clinic, lty = c(&quot;solid&quot;, &quot;dashed&quot;), col = c(&quot;black&quot;, &quot;grey&quot;), xlab = &quot;survival time in days&quot;, ylab = &quot;survival probabilities&quot;)
-&gt; legend(&quot;topright&quot;, c(&quot;Clinic 1&quot;, &quot;Clinic 2&quot;), lty = c(&quot;solid&quot;, &quot;dashed&quot;), col = c(&quot;black&quot;, &quot;grey&quot;))</code></pre>
+<p>plot e.g. N.B <code>conf.int=F</code> supresses 95% conf intervals</p>
+<pre class="r"><code>plot(surv.fit, lty = c(&quot;solid&quot;, &quot;dashed&quot;), col = c(&quot;black&quot;, &quot;blue&quot;), xlab = &quot;survival time in days&quot;, ylab = &quot;survival probabilities&quot;)
+&gt; legend(&quot;topright&quot;, c(&quot;Clinic 1&quot;, &quot;Clinic 2&quot;), lty = c(&quot;solid&quot;, &quot;dashed&quot;), col = c(&quot;black&quot;, &quot;blue&quot;))</code></pre>
+<p>Log-rank test e.g. this test looks at the observed versus expected events if the two curves were identical and compares them under a chi sq distribution <code>survdiff(Surv(survt, status)~clinic, data = addict)</code> OR <code>survdiff(surv.obj ~ stratum)</code></p>
+<div id="running-a-cox-ph-model" class="section level2">
+<h2>Running a Cox PH model</h2>
+<p><code>ph.model&lt;-coxph(surv.obj ~ predictor1 + predictor2, data = data)</code> then get a summary of the model object <code>summary(ph.model)</code></p>
+<p>Next, check for interaction by creating a new model that contains interaction terms. The two models’ log likelihood can be compared to see if there is significance to the full model. Use the script <strong>liklihood ratio for two coxPH models.R</strong></p>
+</div>
+<div id="checking-the-cox-ph-assumption" class="section level2">
+<h2>Checking the Cox PH assumption</h2>
+<div id="graphical-log-log" class="section level3">
+<h3>Graphical (Log-Log)</h3>
+<p><code>plot(surv.fit, fun = &quot;cloglog&quot;,xlab=&quot;time in days using logarithmic scale&quot;,ylab=&quot;log-log survival&quot;, main=&quot;log-log curves by category&quot;)</code></p>
+</div>
+<div id="schoenfeld-residual-correlation-with-survival-time-significant-p-values-indicate-violation-of-the-ph-assumption" class="section level3">
+<h3>Schoenfeld residual correlation with survival time (significant p values indicate violation of the PH assumption)</h3>
+<p><code>cox.zph(ph.model, transform = rank)</code> <code>plot(cox.zph(ph.model, transform = rank), se = F, var = 'violated.variable')</code></p>
+</div>
+</div>
+<div id="cox-adjusted-survival-curves" class="section level2">
+<h2>Cox-adjusted survival curves</h2>
+<p>Need a survival object and a cox model based on the object. An adjusted survival curve is based on a specific pattern of data. e.g. for addict data set PRISON=0, DOSE=70, and CLINIC=2. Typically, the mean is picked for the covariates being adjusted for. All the covariates can be adjusted for by picking the mean for all covariates. <em>NOTE</em> this is better done with a stratified cox model and should be updated.</p>
+<pre class="r"><code>pattern1&lt;- data.frame(clinic = 1, methodone = mean, prison = mean)
+pattern2&lt;- data.frame(clinic = 2, methodone = mean, prison = mean)
+plot(surfit(ph.model, newdata=pattern1), conf.int = F)
+par(new=T)
+plot(surfit(ph.model, newdata=pattern2), conf.int = F)
+par(new=F)</code></pre>
+</div>
+<div id="modeling-recurring-events" class="section level2">
+<h2>Modeling Recurring Events</h2>
+<p>Data needs to be recorded in a counting process format with the following headers:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">interval</th>
+<th align="left">start</th>
+<th align="left">stop</th>
+<th align="left">event</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
 
 
 </div>

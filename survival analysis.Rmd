@@ -11,7 +11,7 @@ e.g.
 
 Next, create a fit object using `survfit()` with surv.obj ~ 1 for no strata, or surv.obj ~ dat$strata 
 
-plot e.g.
+plot e.g. N.B `conf.int=F` supresses 95% conf intervals
 ```{r eval=FALSE}
 plot(surv.fit, lty = c("solid", "dashed"), col = c("black", "blue"), xlab = "survival time in days", ylab = "survival probabilities")
 > legend("topright", c("Clinic 1", "Clinic 2"), lty = c("solid", "dashed"), col = c("black", "blue"))
@@ -29,3 +29,29 @@ then get a summary of the model object
 `summary(ph.model)`
 
 Next, check for interaction by creating a new model that contains interaction terms. The two models' log likelihood can be compared to see if there is significance to the full model. Use the script **liklihood ratio for two coxPH models.R**
+
+## Checking the Cox PH assumption
+### Graphical (Log-Log)
+`plot(surv.fit, fun = "cloglog",xlab="time in days using logarithmic scale",ylab="log-log survival", main="log-log curves by category")`
+
+### Schoenfeld residual correlation with survival time (significant p values indicate violation of the PH assumption)
+`cox.zph(ph.model, transform = rank)`
+`plot(cox.zph(ph.model, transform = rank), se = F, var = 'violated.variable')`
+
+## Cox-adjusted survival curves
+Need a survival object and a cox model based on the object. An adjusted survival curve is based on a specific pattern of data. e.g. for addict data set PRISON=0, DOSE=70, and CLINIC=2. Typically, the mean is picked for the covariates being adjusted for. All the covariates can be adjusted for by picking the mean for all covariates. *NOTE* this is better done with a stratified cox model and should be updated.
+
+```{r eval = FALSE}
+pattern1<- data.frame(clinic = 1, methodone = mean, prison = mean)
+pattern2<- data.frame(clinic = 2, methodone = mean, prison = mean)
+plot(surfit(ph.model, newdata=pattern1), conf.int = F)
+par(new=T)
+plot(surfit(ph.model, newdata=pattern2), conf.int = F)
+par(new=F)
+```
+
+## Modeling Recurring Events
+Data needs to be recorded in a counting process format with the following headers:
+
+| id | interval | start | stop | event |
+|--- | ---      | ---   | ---- | ---   |
